@@ -28,12 +28,12 @@ namespace IGWebApiClient
     public class IgRestService
     {
         private static string _baseUrl = "https://demo-api.ig.com";
-        private PropertyEventDispatcher eventDispatcher;
+        private readonly PropertyEventDispatcher eventDispatcher;
 
         public IgRestService(PropertyEventDispatcher eventDispatcher, string env = "demo")
         {
             this.eventDispatcher = eventDispatcher;
-            _baseUrl = String.Format("https://{0}api.ig.com", env == "live" ? "" : env + "-");
+            _baseUrl = $"https://{(env == "live" ? "" : env + "-")}api.ig.com";
         }
 
         public void ParseHeaders(ConversationContext conversationContext, HttpResponseHeaders headers)

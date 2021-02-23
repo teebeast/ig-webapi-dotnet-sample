@@ -327,8 +327,8 @@ namespace IGWebApiClient
 		protected virtual void OnUpdate(UpdateArgs<T> e)
 		{
 			var handler = Update;
-			if (handler != null) handler(this, e);
-		}
+            handler?.Invoke(this, e);
+        }
 	}
 
 	public class AccountDetailsTableListerner : TableListenerAdapterBase<StreamingAccountData>
@@ -526,7 +526,7 @@ namespace IGWebApiClient
     public class IGStreamingApiClient : IConnectionListener
     {
 
-        private LSClient lsClient;
+        private readonly LSClient lsClient;
 
         public IGStreamingApiClient()
         {
@@ -542,12 +542,12 @@ namespace IGWebApiClient
 
         public bool Connect(string username, string cstToken, string xSecurityToken, string apiKey, string lsHost)
         {
-            bool connectionEstablished = false;
+            var connectionEstablished = false;
 
-            ConnectionInfo connectionInfo = new ConnectionInfo();
+            var connectionInfo = new ConnectionInfo();
             connectionInfo.Adapter = "DEFAULT";
             connectionInfo.User = username;
-			connectionInfo.Password = string.Format("CST-{0}|XST-{1}", cstToken, xSecurityToken);
+			connectionInfo.Password = $"CST-{cstToken}|XST-{xSecurityToken}";
             connectionInfo.PushServerUrl = lsHost;
             try
             {
@@ -571,11 +571,8 @@ namespace IGWebApiClient
 		}
 
 		public void Disconnect()
-		{
-            if (lsClient != null)
-            {
-                lsClient.CloseConnection();
-            }
+        {
+            lsClient?.CloseConnection();
         }
 
         /// <summary>
@@ -620,7 +617,7 @@ namespace IGWebApiClient
 
 		public SubscribedTableKey SubscribeToAccountDetails(string accountId, IHandyTableListener tableListener, IEnumerable<string> fields)
         {
-            ExtendedTableInfo extTableInfo = new ExtendedTableInfo(
+            var extTableInfo = new ExtendedTableInfo(
 				new[] { "ACCOUNT:" + accountId },
                 "MERGE",
 				fields.ToArray(),
@@ -661,8 +658,8 @@ namespace IGWebApiClient
 		public SubscribedTableKey SubscribeToMarketDetails(IEnumerable<string> epics, IHandyTableListener tableListener, IEnumerable<string> fields)
             {
 
-			string[] items = epics.Select(e => string.Format("L1:{0}", e)).ToArray();
-			ExtendedTableInfo extTableInfo = new ExtendedTableInfo(
+			var items = epics.Select(e => $"L1:{e}").ToArray();
+			var extTableInfo = new ExtendedTableInfo(
 				items,
 				"MERGE",
 				fields.ToArray(),
@@ -682,8 +679,8 @@ namespace IGWebApiClient
 
 		public SubscribedTableKey SubscribeToChartTicks(IEnumerable<string> epics, IHandyTableListener tableListener, string[] fields)
 		{
-			string[] items = epics.Select(e => string.Format("CHART:{0}:TICK", e)).ToArray();
-			ExtendedTableInfo extTableInfo = new ExtendedTableInfo(
+			var items = epics.Select(e => $"CHART:{e}:TICK").ToArray();
+			var extTableInfo = new ExtendedTableInfo(
 				items,
 				"DISTINCT",
 				fields,
@@ -708,8 +705,8 @@ namespace IGWebApiClient
 
 		public SubscribedTableKey SubscribeToChartCandleData(IEnumerable<string> epics, ChartScale scale, IHandyTableListener tableListener, string[] fields)
 		{
-			string[] items = epics.Select(e => string.Format("CHART:{0}:{1}", e, GetScale(scale))).ToArray();
-            ExtendedTableInfo extTableInfo = new ExtendedTableInfo(
+			var items = epics.Select(e => $"CHART:{e}:{GetScale(scale)}").ToArray();
+            var extTableInfo = new ExtendedTableInfo(
                 items,
                 "MERGE",
                 fields,
@@ -731,7 +728,7 @@ namespace IGWebApiClient
 				case ChartScale.OneHour:
 					return "HOUR";
 				default:
-					throw new ArgumentOutOfRangeException("scale");
+					throw new ArgumentOutOfRangeException(nameof(scale));
 			}
 		}
 
@@ -761,7 +758,7 @@ namespace IGWebApiClient
 		}
 		public SubscribedTableKey SubscribeToTradeSubscription(string accountId, IHandyTableListener tableListener, IEnumerable<string> fields)
         {
-            ExtendedTableInfo extTableInfo = new ExtendedTableInfo(
+            var extTableInfo = new ExtendedTableInfo(
 				new[] { "TRADE:" + accountId },
                 "DISTINCT",
 				fields.ToArray(),
@@ -773,11 +770,8 @@ namespace IGWebApiClient
         public void UnsubscribeTableKey(SubscribedTableKey stk)
         {
             try
-            {              
-                if (lsClient != null)
-                {
-                    lsClient.UnsubscribeTable(stk);
-                }
+            {
+                lsClient?.UnsubscribeTable(stk);
             }
             catch (Exception)
             {
@@ -793,10 +787,7 @@ namespace IGWebApiClient
 
         public virtual void OnClose()
         {
-            if (lsClient != null)
-            {
-                lsClient.CloseConnection();
-            }
+            lsClient?.CloseConnection();
         }
 
         public virtual void OnConnectionEstablished()

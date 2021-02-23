@@ -23,8 +23,8 @@ namespace SampleWPFTrader.ViewModel
 
         private SubscribedTableKey _watchlistL1PricesSubscribedTableKey;
         private SubscribedTableKey _chartSubscribedTableKey;
-		private MarketDetailsTableListerner _l1PricesSubscription;
-        private ChartCandleTableListerner _chartSubscription;
+		private readonly MarketDetailsTableListerner _l1PricesSubscription;
+        private readonly ChartCandleTableListerner _chartSubscription;
 
         public WatchlistsViewModel()
         {           
@@ -157,10 +157,7 @@ namespace SampleWPFTrader.ViewModel
           
         public IgPublicApiData.WatchlistModel CurrentWatchlist
         {
-            get
-            {
-                return _currentWatchlist;
-            }
+            get => _currentWatchlist;
 
             set
             {
@@ -175,10 +172,7 @@ namespace SampleWPFTrader.ViewModel
 
         public int WatchlistIndex
         {
-            get
-            {                
-                return _watchlistIndex;
-            }
+            get => _watchlistIndex;
             set
             {
                 if (_watchlistIndex != value)
@@ -194,10 +188,7 @@ namespace SampleWPFTrader.ViewModel
 
         public int ChartIndex
         {
-            get
-            {
-                return _chartIndex;
-            }
+            get => _chartIndex;
             set
             {
                 if (_chartIndex != value)
@@ -225,9 +216,9 @@ namespace SampleWPFTrader.ViewModel
 
         private void UnsubscribeFromWatchlistInstruments()
         {            
-            if ((igStreamApiClient != null) && (_watchlistL1PricesSubscribedTableKey != null) && (LoggedIn))
+            if (IgStreamApiClient != null && _watchlistL1PricesSubscribedTableKey != null && LoggedIn)
             {
-                igStreamApiClient.UnsubscribeTableKey(_watchlistL1PricesSubscribedTableKey);
+                IgStreamApiClient.UnsubscribeTableKey(_watchlistL1PricesSubscribedTableKey);
                 _watchlistL1PricesSubscribedTableKey = null;
 
                 AddStatusMessage("WatchlistsViewModel : Unsubscribing from L1 Prices for Watchlists");
@@ -236,9 +227,9 @@ namespace SampleWPFTrader.ViewModel
 
         private void UnsubscribeFromCharts()
         {
-            if ((igStreamApiClient != null) && (_chartSubscribedTableKey!= null) && (LoggedIn))
+            if (IgStreamApiClient != null && _chartSubscribedTableKey!= null && LoggedIn)
             {
-                igStreamApiClient.UnsubscribeTableKey(_chartSubscribedTableKey);
+                IgStreamApiClient.UnsubscribeTableKey(_chartSubscribedTableKey);
                 _chartSubscribedTableKey = null;
 
                 AddStatusMessage("WatchlistsViewModel : Unsubscribing from candle data from charts");
@@ -267,10 +258,7 @@ namespace SampleWPFTrader.ViewModel
         private bool _watchlistTabSelected;
         public bool WatchlistTabSelected
         {
-            get
-            {
-                return _watchlistTabSelected;
-            }
+            get => _watchlistTabSelected;
             set
             {
                 if (_watchlistTabSelected != value)
@@ -285,10 +273,7 @@ namespace SampleWPFTrader.ViewModel
 
         public int WatchlistMarketIndex
         {
-            get
-            {
-                return _watchlistMarketIndex;
-            }
+            get => _watchlistMarketIndex;
 
             set
             {
@@ -303,10 +288,10 @@ namespace SampleWPFTrader.ViewModel
         private string _watchlistsData;
         public string WatchlistsData
         {
-            get { return _watchlistsData; }
+            get => _watchlistsData;
             set
             {
-                if ((_watchlistsData != value) && (value != null))
+                if (_watchlistsData != value && value != null)
                 {
                     _watchlistsData = value;
                     RaisePropertyChanged("WatchlistsData");
@@ -317,10 +302,10 @@ namespace SampleWPFTrader.ViewModel
         private string _watchlistL1PriceUpdates;
         public string WatchlistL1PriceUpdates
         {
-            get { return _watchlistL1PriceUpdates; }
+            get => _watchlistL1PriceUpdates;
             set
             {
-                if ((_watchlistL1PriceUpdates != value) && (value != null))
+                if (_watchlistL1PriceUpdates != value && value != null)
                 {
                     _watchlistL1PriceUpdates = value;
                     RaisePropertyChanged("WatchlistL1PriceUpdates");
@@ -350,8 +335,8 @@ namespace SampleWPFTrader.ViewModel
             try
             {               
                 AddStatusMessage("Retrieving watchlists");
-                var response = await igRestApiClient.listOfWatchlists();
-				if (response && (response.Response.watchlists != null))
+                var response = await IgRestApiClient.ListOfWatchlists();
+				if (response && response.Response.watchlists != null)
                 {
                     Watchlists.Clear();
                     foreach (var wl in response.Response.watchlists)
@@ -393,14 +378,14 @@ namespace SampleWPFTrader.ViewModel
         {           
             try
             {               
-				if ((Watchlists != null) && (WatchlistIndex < Watchlists.Count))
+				if (Watchlists != null && WatchlistIndex < Watchlists.Count)
                 {                    
-                    AddStatusMessage(String.Format("Retrieving watchlist markets for watchlist called {0}",
-                                                          Watchlists[WatchlistIndex].WatchlistName));
-                    var response = await igRestApiClient.instrumentsForWatchlist(Watchlists[WatchlistIndex].WatchlistId);
+                    AddStatusMessage(
+                        $"Retrieving watchlist markets for watchlist called {Watchlists[WatchlistIndex].WatchlistName}");
+                    var response = await IgRestApiClient.InstrumentsForWatchlist(Watchlists[WatchlistIndex].WatchlistId);
                     if (response != null) 
                     {
-                        if (response && (response.Response.markets != null) && (response.Response.markets.Count > 0))
+                        if (response && response.Response.markets != null && response.Response.markets.Count > 0)
                         {
                             WatchlistMarkets.Clear();
 							foreach (var wim in response.Response.markets.Select(LoadMarket))
@@ -467,9 +452,9 @@ namespace SampleWPFTrader.ViewModel
         {                                   
             try
             {                                     
-                if (igStreamApiClient != null) 
+                if (IgStreamApiClient != null) 
                 {                       
-					_watchlistL1PricesSubscribedTableKey = igStreamApiClient.SubscribeToMarketDetails(watchlistItems, _l1PricesSubscription);
+					_watchlistL1PricesSubscribedTableKey = IgStreamApiClient.SubscribeToMarketDetails(watchlistItems, _l1PricesSubscription);
                     AddStatusMessage("Successfully subscribed to Watchlist : " + Watchlists[WatchlistIndex].WatchlistName);                        
                 }                                   
             }
@@ -486,19 +471,19 @@ namespace SampleWPFTrader.ViewModel
         {
             try
             {
-                if (igStreamApiClient != null)
+                if (IgStreamApiClient != null)
                 {                    
                     ChartMarketData.Clear();                    
                     foreach (var epic in chartEpics)
                     {
-                        IgPublicApiData.ChartModel ccd = new IgPublicApiData.ChartModel();
+                        var ccd = new IgPublicApiData.ChartModel();
                         ccd.ChartEpic = epic;                       
                         ChartMarketData.Add(ccd);
 
                         AddStatusMessage("Subscribing to Chart Data (CandleStick ): " + ccd.ChartEpic);
                     }
 
-                    _chartSubscribedTableKey = igStreamApiClient.SubscribeToChartCandleData( chartEpics, ChartScale.OneMinute, _chartSubscription);
+                    _chartSubscribedTableKey = IgStreamApiClient.SubscribeToChartCandleData( chartEpics, ChartScale.OneMinute, _chartSubscription);
                    
                 }
             }

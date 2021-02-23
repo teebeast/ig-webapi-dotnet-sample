@@ -9,7 +9,7 @@ namespace IGWebApiClient.Common
         /// <summary>
         /// A static set of argument instances, one per property name.
         /// </summary>
-        private static Dictionary<string, PropertyChangedEventArgs> _argumentInstances = new Dictionary<string, PropertyChangedEventArgs>();
+        private static readonly Dictionary<string, PropertyChangedEventArgs> __argumentInstances = new Dictionary<string, PropertyChangedEventArgs>();
 
         /// <summary>
         /// The property changed event.
@@ -20,6 +20,7 @@ namespace IGWebApiClient.Common
         /// Notify any listeners that the property value has changed.
         /// </summary>
         /// <param name="propertyName">The property name.</param>
+        /// <param name="eventDispatcher"></param>
         public void RaisePropertyChanged(string propertyName, ref PropertyEventDispatcher eventDispatcher)
         {
             if (string.IsNullOrEmpty(propertyName))
@@ -27,14 +28,13 @@ namespace IGWebApiClient.Common
                 throw new ArgumentException("PropertyName cannot be empty or null.");
             }
 
-            PropertyChangedEventHandler handler = PropertyChanged;
+            var handler = PropertyChanged;
             if (handler != null)
             {
-                PropertyChangedEventArgs args;
-                if (!_argumentInstances.TryGetValue(propertyName, out args))
+                if (!__argumentInstances.TryGetValue(propertyName, out var args))
                 {
                     args = new PropertyChangedEventArgs(propertyName);
-                    _argumentInstances[propertyName] = args;
+                    __argumentInstances[propertyName] = args;
                 }
 
                 // Fire the change event. The smart dispatcher will directly

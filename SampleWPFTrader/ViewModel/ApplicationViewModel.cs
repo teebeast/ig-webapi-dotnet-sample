@@ -58,7 +58,7 @@ namespace SampleWPFTrader.ViewModel
 		{
 			var accountUpdates = e.UpdateData;
 
-			if ((e.ItemPosition == 0) || (e.ItemPosition > Accounts.Count))
+			if (e.ItemPosition == 0 || e.ItemPosition > Accounts.Count)
 			{
 				return;
 			}
@@ -96,12 +96,9 @@ namespace SampleWPFTrader.ViewModel
 
 		public Application CurrentApplication
 		{
-			get
-			{
-				return _currentApplication;
-			}
+			get => _currentApplication;
 
-			set
+            set
 			{
 				if (_currentApplication != value)
 				{
@@ -114,11 +111,8 @@ namespace SampleWPFTrader.ViewModel
 		private bool _loginTabSelected;
 		public bool LoginTabSelected
 		{
-			get
-			{
-                return _loginTabSelected;
-			}
-			set
+			get => _loginTabSelected;
+            set
 			{
 				if (_loginTabSelected != value)
 				{
@@ -132,11 +126,8 @@ namespace SampleWPFTrader.ViewModel
         private string _applicationPassword;
 		public string ApplicationPassword
 		{
-			get
-			{
-				return _applicationPassword;
-			}
-			set
+			get => _applicationPassword;
+            set
 			{
 				if (_applicationPassword != value)
 				{
@@ -177,9 +168,9 @@ namespace SampleWPFTrader.ViewModel
 
 		private void UnsubscribefromTradeSubscription()
 		{
-			if ((_tradeSubscriptionStk != null) && (igStreamApiClient != null))
+			if (_tradeSubscriptionStk != null && IgStreamApiClient != null)
 			{
-				igStreamApiClient.UnsubscribeTableKey(_tradeSubscriptionStk);
+				IgStreamApiClient.UnsubscribeTableKey(_tradeSubscriptionStk);
 				_tradeSubscriptionStk = null;
 				UpdateDebugMessage("Successfully unsubscribed from Trade Subscription");
 			}
@@ -187,9 +178,9 @@ namespace SampleWPFTrader.ViewModel
 
 		private void UnsubscribeFromAccountDetailsSubscription()
 		{
-			if ((_accountBalanceStk != null) && (igStreamApiClient != null))
+			if (_accountBalanceStk != null && IgStreamApiClient != null)
 			{
-				igStreamApiClient.UnsubscribeTableKey(_accountBalanceStk);
+				IgStreamApiClient.UnsubscribeTableKey(_accountBalanceStk);
 				_accountBalanceStk = null;
 
 				UpdateDebugMessage("Successfully unsubscribed from Account Balance Subscription");
@@ -202,16 +193,16 @@ namespace SampleWPFTrader.ViewModel
 			{
 
 				// Unsubscribe from LS account balance and trade subscriptions...
-				if (igStreamApiClient != null)
+				if (IgStreamApiClient != null)
 				{
 					UnsubscribeFromAccountDetailsSubscription();
 					UnsubscribefromTradeSubscription();
 					Accounts = null;
 				}
 
-				if (igRestApiClient != null)
+				if (IgRestApiClient != null)
 				{
-					igRestApiClient.logout();
+					IgRestApiClient.Logout();
 
 					LoggedIn = false;
 					UpdateDebugMessage("Logged out");
@@ -231,10 +222,10 @@ namespace SampleWPFTrader.ViewModel
 			UpdateDebugMessage("Attempting login");
 
             var igWebApiConnectionConfig = ConfigurationManager.GetSection("IgWebApiConnection") as NameValueCollection;
-            string env = igWebApiConnectionConfig["environment"];
-            string userName = igWebApiConnectionConfig["username"];
-            string password = igWebApiConnectionConfig["password"];
-            string apiKey = igWebApiConnectionConfig["apikey"];
+            var env = igWebApiConnectionConfig["environment"];
+            var userName = igWebApiConnectionConfig["username"];
+            var password = igWebApiConnectionConfig["password"];
+            var apiKey = igWebApiConnectionConfig["apikey"];
             UpdateDebugMessage("User=" + userName + " is attempting to login to environment=" + env);
 
             if (String.IsNullOrEmpty(userName) || String.IsNullOrEmpty(password) || String.IsNullOrEmpty(apiKey))
@@ -247,8 +238,8 @@ namespace SampleWPFTrader.ViewModel
 
 			try
 			{
-				var response = await igRestApiClient.SecureAuthenticate(ar, apiKey);
-				if (response && (response.Response != null) && (response.Response.accounts.Count > 0))
+				var response = await IgRestApiClient.SecureAuthenticate(ar, apiKey);
+				if (response && response.Response != null && response.Response.accounts.Count > 0)
 				{
 					Accounts.Clear();
 
@@ -274,26 +265,26 @@ namespace SampleWPFTrader.ViewModel
 
 					UpdateDebugMessage("Logged in, current account: " + response.Response.currentAccountId);
 
-					ConversationContext context = igRestApiClient.GetConversationContext();
+					var context = IgRestApiClient.GetConversationContext();
 
 					UpdateDebugMessage("establishing datastream connection");
 
-					if ((context != null) && (response.Response.lightstreamerEndpoint != null) &&
-						(context.apiKey != null) && (context.xSecurityToken != null) && (context.cst != null))
+					if (context != null && response.Response.lightstreamerEndpoint != null &&
+						context.apiKey != null && context.xSecurityToken != null && context.cst != null)
 					{
 						try
 						{
 							CurrentAccountId = response.Response.currentAccountId;
 
 							var connectionEstablished =
-								igStreamApiClient.Connect(response.Response.currentAccountId,
+								IgStreamApiClient.Connect(response.Response.currentAccountId,
 														  context.cst,
 														  context.xSecurityToken, context.apiKey,
 															response.Response.lightstreamerEndpoint);
 							if (connectionEstablished)
 							{
-								UpdateDebugMessage(String.Format("Connecting to Lightstreamer. Endpoint ={0}",
-																	response.Response.lightstreamerEndpoint));
+								UpdateDebugMessage(
+                                    $"Connecting to Lightstreamer. Endpoint ={response.Response.lightstreamerEndpoint}");
 
 								// Subscribe to Account Details and Trade Subscriptions...
 								SubscribeToAccountDetails();
@@ -301,10 +292,9 @@ namespace SampleWPFTrader.ViewModel
 							}
 							else
 							{
-								igStreamApiClient = null;
-								UpdateDebugMessage(String.Format(
-									"Could NOT connect to Lightstreamer. Endpoint ={0}",
-									response.Response.lightstreamerEndpoint));
+								IgStreamApiClient = null;
+								UpdateDebugMessage(
+                                    $"Could NOT connect to Lightstreamer. Endpoint ={response.Response.lightstreamerEndpoint}");
 							}
 						}
 						catch (Exception ex)
@@ -333,7 +323,7 @@ namespace SampleWPFTrader.ViewModel
 			{
 				if (CurrentAccountId != null)
 				{
-					_accountBalanceStk = igStreamApiClient.SubscribeToAccountDetails(CurrentAccountId, _accountBalanceSubscription);
+					_accountBalanceStk = IgStreamApiClient.SubscribeToAccountDetails(CurrentAccountId, _accountBalanceSubscription);
 					UpdateDebugMessage("Lightstreamer - Subscribing to Account Details");
 				}
 			}
@@ -350,7 +340,7 @@ namespace SampleWPFTrader.ViewModel
 			{
 				if (CurrentAccountId != null)
 				{
-					_tradeSubscriptionStk = igStreamApiClient.SubscribeToTradeSubscription(CurrentAccountId, _tradeSubscription);
+					_tradeSubscriptionStk = IgStreamApiClient.SubscribeToTradeSubscription(CurrentAccountId, _tradeSubscription);
 					UpdateDebugMessage("Lightstreamer - Subscribing to CONFIRMS, Working order updates and open position updates");
 				}
 			}
@@ -407,14 +397,14 @@ namespace SampleWPFTrader.ViewModel
 							break;
 					}
 
-					SmartDispatcher.getInstance().BeginInvoke(() =>
+					SmartDispatcher.GetInstance().BeginInvoke(() =>
 					{
 						if (_applicationViewModel != null)
 						{
 							_applicationViewModel.UpdateDebugMessage("TradeSubscription received : " + tsm.TradeType);
 							_applicationViewModel.TradeSubscriptions.Add(tsm);
 
-							if ((tradeSubUpdate.affectedDeals != null) && (tradeSubUpdate.affectedDeals.Count > 0))
+							if (tradeSubUpdate.affectedDeals != null && tradeSubUpdate.affectedDeals.Count > 0)
 							{
 								foreach (var ad in tradeSubUpdate.affectedDeals)
 								{
@@ -448,15 +438,15 @@ namespace SampleWPFTrader.ViewModel
 					var opu = update.GetNewValue("OPU");
 					var wou = update.GetNewValue("WOU");
 
-					if (!(String.IsNullOrEmpty(opu)))
+					if (!String.IsNullOrEmpty(opu))
 					{
 						UpdateTs(itemPos, itemName, update, opu, TradeSubscriptionType.Opu);
 					}
-					if (!(String.IsNullOrEmpty(wou)))
+					if (!String.IsNullOrEmpty(wou))
 					{
 						UpdateTs(itemPos, itemName, update, wou, TradeSubscriptionType.Wou);
 					}
-					if (!(String.IsNullOrEmpty(confirms)))
+					if (!String.IsNullOrEmpty(confirms))
 					{
 						UpdateTs(itemPos, itemName, update, confirms, TradeSubscriptionType.Confirm);
 					}

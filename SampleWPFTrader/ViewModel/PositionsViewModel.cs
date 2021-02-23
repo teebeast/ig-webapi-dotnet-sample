@@ -15,16 +15,13 @@ namespace SampleWPFTrader.ViewModel
         private IgPublicApiData.PositionModel _currentPosition;
 
         // LS subscriptions...
-        private L1PricesSubscription _l1PricesSubscription;
+        private readonly L1PricesSubscription _l1PricesSubscription;
         private SubscribedTableKey _l1PositionPricesTableKey;
 
         private bool _positionsTabSelected;
         public bool PositionsTabSelected
         {
-            get
-            {
-                return _positionsTabSelected;
-            }
+            get => _positionsTabSelected;
             set
             {
                 if (_positionsTabSelected != value)
@@ -53,9 +50,9 @@ namespace SampleWPFTrader.ViewModel
 
         private void UnsubscribeFromPositions()
         {
-            if ((igStreamApiClient != null) && (_l1PositionPricesTableKey != null) && (LoggedIn))
+            if (IgStreamApiClient != null && _l1PositionPricesTableKey != null && LoggedIn)
             {
-                igStreamApiClient.UnsubscribeTableKey(_l1PositionPricesTableKey);
+                IgStreamApiClient.UnsubscribeTableKey(_l1PositionPricesTableKey);
                 _l1PositionPricesTableKey = null;
 
                 UpdatePositionMessage("PositionViewModel : Unsubscribing from Positions");
@@ -80,16 +77,13 @@ namespace SampleWPFTrader.ViewModel
 
         public ObservableCollection<IgPublicApiData.PositionModel> Positions
         {
-            get { return _positions; }
-            set { _positions = value; }
+            get => _positions;
+            set => _positions = value;
         }
 
         public IgPublicApiData.PositionModel CurrentPosition
         {
-            get
-            {
-                return _currentPosition;
-            }
+            get => _currentPosition;
 
             set
             {
@@ -110,9 +104,9 @@ namespace SampleWPFTrader.ViewModel
         {
             try
             {
-                if (igStreamApiClient != null)
+                if (IgStreamApiClient != null)
                 {
-                    _l1PositionPricesTableKey = igStreamApiClient.SubscribeToMarketDetails(positionSubs, _l1PricesSubscription);
+                    _l1PositionPricesTableKey = IgStreamApiClient.SubscribeToMarketDetails(positionSubs, _l1PricesSubscription);
                     UpdatePositionMessage("Successfully subscribed to positions");
                 }
             }
@@ -125,10 +119,10 @@ namespace SampleWPFTrader.ViewModel
         public async void GetRestPositions()
         {
             UpdatePositionMessage("Retrieving open positions");
-            if (igRestApiClient != null)
+            if (IgRestApiClient != null)
             {
-                var positionsResponse = await igRestApiClient.getOTCOpenPositionsV2();
-                if (positionsResponse && (positionsResponse.Response != null))
+                var positionsResponse = await IgRestApiClient.GetOtcOpenPositionsV2();
+                if (positionsResponse && positionsResponse.Response != null)
                 {
                     Positions.Clear();
                     if (positionsResponse.Response.positions.Count != 0)
@@ -149,19 +143,17 @@ namespace SampleWPFTrader.ViewModel
                             igpd.Model.StreamingPricesAvailable = position.market.streamingPricesAvailable;
                             igpd.Model.MarketStatus = position.market.marketStatus;
                             igpd.CreatedDate = position.position.createdDate;
+                            igpd.OpenLevel = position.position.level;
 
                             // This is our list of all positions that the client has...
-                            if (Positions != null)
-                            {
-                                Positions.Add(igpd);
-                            }
+                            Positions?.Add(igpd);
                         }
 
                         //
                         // this is a list of unique epics ( don't forget we don't want to subscribe to the same epic twice, or subscribe to an instrument
                         // which has streaming prices disabled.
                         //
-                        string[] uc = (from dbo in Positions
+                        var uc = (from dbo in Positions
                                        where dbo.Model.StreamingPricesAvailable == true
                                        select dbo.Model.Epic).Distinct().ToArray();
 

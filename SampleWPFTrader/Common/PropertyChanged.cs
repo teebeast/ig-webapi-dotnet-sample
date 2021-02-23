@@ -5,7 +5,7 @@ namespace SampleWPFTrader.Common
     public class PropertyChanged : PropertyChangedBase
     {
 
-        private static PropertyEventDispatcher eventDispatcher = SmartDispatcher.getInstance();
+        private static PropertyEventDispatcher eventDispatcher = SmartDispatcher.GetInstance();
 
         /// <summary>
         /// Notify any listeners that the property value has changed.

@@ -11,17 +11,14 @@ namespace SampleWPFTrader.ViewModel
     public class BrowseViewModel : ViewModelBase
 	{
 		// LS subscriptions...
-		private MarketDetailsTableListerner _l1BrowsePricesSubscription;
+		private readonly MarketDetailsTableListerner _l1BrowsePricesSubscription;
 		private SubscribedTableKey _browseSubscriptionTableKey;
 
 		private bool _browseTabSelected;
 		public bool BrowseTabSelected
 		{
-			get
-			{
-				return _browseTabSelected;
-			}
-			set
+			get => _browseTabSelected;
+            set
 			{
 				if (_browseTabSelected != value)
 				{
@@ -114,8 +111,8 @@ namespace SampleWPFTrader.ViewModel
 		private HierarchyNode _selectedItem;
 		public HierarchyNode SelectedItem
 		{
-			get { return _selectedItem; }
-			set
+			get => _selectedItem;
+            set
 			{
 				if (_selectedItem != value)
 				{
@@ -144,8 +141,8 @@ namespace SampleWPFTrader.ViewModel
 		private int _nodeIndex;
 		public int NodeIndex
 		{
-			get { return _nodeIndex; }
-			set
+			get => _nodeIndex;
+            set
 			{
 				if (_nodeIndex != value)
 				{
@@ -160,7 +157,7 @@ namespace SampleWPFTrader.ViewModel
 			try
 			{
 				// Subscribe to L1 price updates for the instruments contained in this browse node...
-				_browseSubscriptionTableKey = igStreamApiClient.SubscribeToMarketDetails(epics, _l1BrowsePricesSubscription);
+				_browseSubscriptionTableKey = IgStreamApiClient.SubscribeToMarketDetails(epics, _l1BrowsePricesSubscription);
 				AddStatusMessage("Subscribed Successfully to instruments contained within this browse node.");
 			}
 			catch (Exception ex)
@@ -171,9 +168,9 @@ namespace SampleWPFTrader.ViewModel
 
 		public void UnsubscribeFromBrowsePrices()
 		{
-			if ((igStreamApiClient != null) && (_browseSubscriptionTableKey != null) && (LoggedIn))
+			if (IgStreamApiClient != null && _browseSubscriptionTableKey != null && LoggedIn)
 			{
-				igStreamApiClient.UnsubscribeTableKey(_browseSubscriptionTableKey);
+				IgStreamApiClient.UnsubscribeTableKey(_browseSubscriptionTableKey);
 				_browseSubscriptionTableKey = null;
 				AddStatusMessage("Unsubscribed from Browse Node Prices");
 			}
@@ -189,7 +186,7 @@ namespace SampleWPFTrader.ViewModel
 					return;
 				}
 
-				if ((igRestApiClient == null) || (BrowseNodes == null))
+				if (IgRestApiClient == null || BrowseNodes == null)
 				{
 					return;
 				}
@@ -201,9 +198,9 @@ namespace SampleWPFTrader.ViewModel
 
 				UnsubscribeFromBrowsePrices();
 
-				var response = await igRestApiClient.browse(BrowseNodes[NodeIndex].id);
+				var response = await IgRestApiClient.Browse(BrowseNodes[NodeIndex].id);
 
-				if (!response || (response.Response == null))
+				if (!response || response.Response == null)
 				{
 					AddStatusMessage("BrowseMarketNodex: no sub-nodes / markets for this node");
 					return;
@@ -234,7 +231,7 @@ namespace SampleWPFTrader.ViewModel
 					foreach (var market in response.Response.markets.Where(m => m != null).Select(LoadMarket))
 					{
 						BrowseMarkets.Add(market);
-						AddStatusMessage(String.Format("Browse Market found: {0} epic:{1}", market.Model.InstrumentName, market.Model.Epic));
+						AddStatusMessage($"Browse Market found: {market.Model.InstrumentName} epic:{market.Model.Epic}");
 					}
 
 					//
@@ -284,9 +281,9 @@ namespace SampleWPFTrader.ViewModel
 					// Unsubscribe from any instruments we are currently subscribed to...
 					UnsubscribeFromBrowsePrices();
 
-					var response = await igRestApiClient.browseRoot();
+					var response = await IgRestApiClient.BrowseRoot();
 
-					if (response && (response.Response != null) && (response.Response.nodes != null))
+					if (response && response.Response?.nodes != null)
 					{
 						BrowseNodes.Clear();
 						BrowseMarkets.Clear();
@@ -302,7 +299,7 @@ namespace SampleWPFTrader.ViewModel
 							GetBrowseMarketsCommand.IsEnabled = true;
 						}
 
-						AddStatusMessage(String.Format("Browse Market data received for {0} nodes", response.Response.nodes.Count));
+						AddStatusMessage($"Browse Market data received for {response.Response.nodes.Count} nodes");
 					}
 					else
 					{

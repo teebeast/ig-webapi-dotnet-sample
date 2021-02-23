@@ -33,19 +33,19 @@ namespace IGWebApiClient
 {
     public partial class IgRestApiClient
 	{
-        private PropertyEventDispatcher eventDispatcher;
+        private PropertyEventDispatcher _eventDispatcher;
         private ConversationContext _conversationContext;
 
-        private IgRestService _igRestService;
+        private readonly IgRestService _igRestService;
 
         public IgRestApiClient(string environment, PropertyEventDispatcher eventDispatcher)
         {
-            this.eventDispatcher = eventDispatcher;
-            this._igRestService = new IgRestService(eventDispatcher, environment);
+            _eventDispatcher = eventDispatcher;
+            _igRestService = new IgRestService(eventDispatcher, environment);
         }
 
 
-        private EncryptionKeyResponse ekr { get; set; }
+        protected EncryptionKeyResponse EncryptionKeyResponse { get; set; }
 
         public ConversationContext GetConversationContext()
         {
@@ -57,37 +57,27 @@ namespace IGWebApiClient
             _conversationContext = new ConversationContext(null, null, apiKey);
             var encryptedPassword = await SecurePassword(ar.password);
 
-            if (encryptedPassword == ar.password)
-            {
-                ar.encryptedPassword = false;
-            }
-            else
-            {
-                ar.encryptedPassword = true;
-            }
+            ar.encryptedPassword = encryptedPassword != ar.password;
             ar.password = encryptedPassword;
-            return await authenticate(ar);
+            return await Authenticate(ar);
         }
 
         private async Task<string> SecurePassword(string rawPassword)
         {
             var encryptedPassword = rawPassword;
 
-
             //Try encrypting password. If we can encrypt it, do so...                                                                            
-            var secureResponse = await fetchEncryptionKey();
+            var secureResponse = await FetchEncryptionKey();
 
-            ekr = new EncryptionKeyResponse();
-            ekr = secureResponse.Response;
+            EncryptionKeyResponse = new EncryptionKeyResponse();
+            EncryptionKeyResponse = secureResponse.Response;
 
-            if (ekr != null)
+            if (EncryptionKeyResponse != null)
             {
-                byte[] encryptedBytes;
-
                 // get a public key to ENCRYPT...
-                Rsa rsa = new Rsa(Convert.FromBase64String(ekr.encryptionKey), true);
+                var rsa = new Rsa(Convert.FromBase64String(EncryptionKeyResponse.encryptionKey), true);
 
-                encryptedBytes = rsa.RsaEncrypt(string.Format("{0}|{1}", rawPassword, ekr.timeStamp));
+                var encryptedBytes = rsa.RsaEncrypt($"{rawPassword}|{EncryptionKeyResponse.timeStamp}");
                 encryptedPassword = Convert.ToBase64String(encryptedBytes);
             }
             return encryptedPassword;
@@ -96,15 +86,15 @@ namespace IGWebApiClient
 		///<Summary>
 		///Creates a trading session, obtaining session tokens for subsequent API access.
 		///<p>
-		///   Please note that region-specific <a href=/loginrestrictions>login restrictions</a> may apply.
+		///   Please note that region-specific <a href="/loginrestrictions">login restrictions</a> may apply.
 		///</p>
 		///@param authenticationRequest Client login credentials
 		///@return Client summary account information
 		///</Summary>
 
-		public async Task<IgResponse<dto.endpoint.auth.session.v2.AuthenticationResponse>> authenticate(dto.endpoint.auth.session.v2.AuthenticationRequest authenticationRequest) 
+		public async Task<IgResponse<AuthenticationResponse>> Authenticate(AuthenticationRequest authenticationRequest) 
 		{
-			return await _igRestService.RestfulService<dto.endpoint.auth.session.v2.AuthenticationResponse>("/gateway/deal/session", HttpMethod.Post, "2", _conversationContext, authenticationRequest);
+			return await _igRestService.RestfulService<AuthenticationResponse>("/gateway/deal/session", HttpMethod.Post, "2", _conversationContext, authenticationRequest);
 		}
 
 
@@ -113,7 +103,7 @@ namespace IGWebApiClient
 		///@return the encryption key to be used to encode the credentials
 		///</Summary>
 
-		public async Task<IgResponse<EncryptionKeyResponse>> fetchEncryptionKey() 
+		public async Task<IgResponse<EncryptionKeyResponse>> FetchEncryptionKey() 
 		{
 			return await _igRestService.RestfulService<EncryptionKeyResponse>("/gateway/deal/session/encryptionKey", HttpMethod.Get, "1", _conversationContext);
 		}
@@ -122,7 +112,7 @@ namespace IGWebApiClient
 		///Log out of the current session
 		///</Summary>
 
-		public async void logout() 
+		public async void Logout() 
 		{
 			await _igRestService.RestfulService("/gateway/deal/session", HttpMethod.Delete, "1", _conversationContext);
 		}
@@ -131,7 +121,7 @@ namespace IGWebApiClient
 		///Returns all top-level nodes (market categories) in the market navigation hierarchy.
 		///</Summary>
 
-		public async Task<IgResponse<BrowseMarketsResponse>> browseRoot() 
+		public async Task<IgResponse<BrowseMarketsResponse>> BrowseRoot() 
 		{
 			return await _igRestService.RestfulService<BrowseMarketsResponse>("/gateway/deal/marketnavigation", HttpMethod.Get, "1", _conversationContext);
 		}
@@ -143,7 +133,7 @@ namespace IGWebApiClient
 		///@pathParam nodeId the identifier of the node to browse
 		///</Summary>
 
-		public async Task<IgResponse<BrowseMarketsResponse>> browse(string nodeId) 
+		public async Task<IgResponse<BrowseMarketsResponse>> Browse(string nodeId) 
 		{
 			return await _igRestService.RestfulService<BrowseMarketsResponse>("/gateway/deal/marketnavigation/" + nodeId, HttpMethod.Get, "1", _conversationContext);
 		}
@@ -152,7 +142,7 @@ namespace IGWebApiClient
 		///Returns all open positions for the active account
 		///</Summary>
 
-		public async Task<IgResponse<dto.endpoint.positions.get.otc.v2.PositionsResponse>> getOTCOpenPositionsV2() 
+		public async Task<IgResponse<dto.endpoint.positions.get.otc.v2.PositionsResponse>> GetOtcOpenPositionsV2() 
 		{
 			return await _igRestService.RestfulService<dto.endpoint.positions.get.otc.v2.PositionsResponse>("/gateway/deal/positions", HttpMethod.Get, "2", _conversationContext);
 		}
@@ -161,7 +151,7 @@ namespace IGWebApiClient
 		///Returns all watchlists belonging to the active account
 		///</Summary>
 
-		public async Task<IgResponse<ListOfWatchlistsResponse>> listOfWatchlists() 
+		public async Task<IgResponse<ListOfWatchlistsResponse>> ListOfWatchlists() 
 		{
 			return await _igRestService.RestfulService<ListOfWatchlistsResponse>("/gateway/deal/watchlists", HttpMethod.Get, "1", _conversationContext);
 		}
@@ -171,7 +161,7 @@ namespace IGWebApiClient
 		///@pathParam watchlistId Watchlist id
 		///</Summary>
 
-		public async Task<IgResponse<WatchlistInstrumentsResponse>> instrumentsForWatchlist(string watchlistId) 
+		public async Task<IgResponse<WatchlistInstrumentsResponse>> InstrumentsForWatchlist(string watchlistId) 
 		{
 			return await _igRestService.RestfulService<WatchlistInstrumentsResponse>("/gateway/deal/watchlists/" + watchlistId, HttpMethod.Get, "1", _conversationContext);
 		}
@@ -180,7 +170,7 @@ namespace IGWebApiClient
 		///Returns all open working orders for the active account
 		///</Summary>
 
-		public async Task<IgResponse<dto.endpoint.workingorders.get.v2.WorkingOrdersResponse>> workingOrdersV2() 
+		public async Task<IgResponse<dto.endpoint.workingorders.get.v2.WorkingOrdersResponse>> WorkingOrdersV2() 
 		{
 			return await _igRestService.RestfulService<dto.endpoint.workingorders.get.v2.WorkingOrdersResponse>("/gateway/deal/workingorders", HttpMethod.Get, "2", _conversationContext);
 		}
@@ -192,7 +182,7 @@ namespace IGWebApiClient
         ///@pathParam lastPeriod Interval in milliseconds
         ///</Summary>
 
-        public async Task<IgResponse<ActivityHistoryResponse>> lastActivityPeriod(string lastPeriod)
+        public async Task<IgResponse<ActivityHistoryResponse>> LastActivityPeriod(string lastPeriod)
         {
             return await _igRestService.RestfulService<ActivityHistoryResponse>("/gateway/deal/history/activity/" + lastPeriod, HttpMethod.Get, "1", _conversationContext);
         }
@@ -203,7 +193,7 @@ namespace IGWebApiClient
         ///@pathParam toDateStr End date in dd-mm-yyyy format
         ///</Summary>
 
-        public async Task<IgResponse<ActivityHistoryResponse>> lastActivityTimeRange(string fromDate, string toDate)
+        public async Task<IgResponse<ActivityHistoryResponse>> LastActivityTimeRange(string fromDate, string toDate)
         {
             return await _igRestService.RestfulService<ActivityHistoryResponse>("/gateway/deal/history/activity/" + fromDate + "/" + toDate, HttpMethod.Get, "1", _conversationContext);
         }
@@ -215,7 +205,7 @@ namespace IGWebApiClient
         ///@pathParam lastPeriod Interval in milliseconds
         ///</Summary>
 
-        public async Task<IgResponse<TransactionHistoryResponse>> lastTransactionPeriod(string transactionType, string lastPeriod)
+        public async Task<IgResponse<TransactionHistoryResponse>> LastTransactionPeriod(string transactionType, string lastPeriod)
         {
             return await _igRestService.RestfulService<TransactionHistoryResponse>("/gateway/deal/history/transactions/" + transactionType + "/" + lastPeriod, HttpMethod.Get, "1", _conversationContext);
         }
@@ -227,7 +217,7 @@ namespace IGWebApiClient
         ///@pathParam toDate End date in dd-mm-yyyy format
         ///</Summary>
 
-        public async Task<IgResponse<TransactionHistoryResponse>> lastTransactionTimeRange(string transactionType, string fromDate, string toDate)
+        public async Task<IgResponse<TransactionHistoryResponse>> LastTransactionTimeRange(string transactionType, string fromDate, string toDate)
         {
             return await _igRestService.RestfulService<TransactionHistoryResponse>("/gateway/deal/history/transactions/" + transactionType + "/" + fromDate + "/" + toDate, HttpMethod.Get, "1", _conversationContext);
         }
@@ -237,7 +227,7 @@ namespace IGWebApiClient
         ///Returns a list of accounts belonging to the logged-in client
         ///</Summary>
 
-        public async Task<IgResponse<AccountDetailsResponse>> accountBalance()
+        public async Task<IgResponse<AccountDetailsResponse>> AccountBalance()
         {
             return await _igRestService.RestfulService<AccountDetailsResponse>("/gateway/deal/accounts", HttpMethod.Get, "1", _conversationContext);
         }
@@ -248,7 +238,7 @@ namespace IGWebApiClient
         ///@param accountSwitchRequest Account switch request
         ///</Summary>
 
-        public async Task<IgResponse<AccountSwitchResponse>> accountSwitch(AccountSwitchRequest accountSwitchRequest)
+        public async Task<IgResponse<AccountSwitchResponse>> AccountSwitch(AccountSwitchRequest accountSwitchRequest)
         {
             return await _igRestService.RestfulService<AccountSwitchResponse>("/gateway/deal/session", HttpMethod.Put, "1", _conversationContext, accountSwitchRequest);
         }
@@ -259,7 +249,7 @@ namespace IGWebApiClient
         ///@param updateApplicationRequest application update request
         ///</Summary>
 
-        public async Task<IgResponse<Application>> update(UpdateApplicationRequest updateApplicationRequest)
+        public async Task<IgResponse<Application>> Update(UpdateApplicationRequest updateApplicationRequest)
         {
             return await _igRestService.RestfulService<Application>("/gateway/deal/operations/application", HttpMethod.Put, "1", _conversationContext, updateApplicationRequest);
         }
@@ -268,7 +258,7 @@ namespace IGWebApiClient
         ///Disables the current application key from processing further requests.  Disabled keys may be reenabled via the My Account section on our web dealing platform.
         ///</Summary>
 
-        public async Task<IgResponse<Application>> disableApplication()
+        public async Task<IgResponse<Application>> DisableApplication()
         {
             return await _igRestService.RestfulService<Application>("/gateway/deal/operations/application/disable", HttpMethod.Put, "1", _conversationContext);
         }
@@ -277,7 +267,7 @@ namespace IGWebApiClient
         ///Returns a list of client-owned applications
         ///</Summary>
 
-        public async Task<IgResponse<List<Application>>> findClientApplications()
+        public async Task<IgResponse<List<Application>>> FindClientApplications()
         {
             return await _igRestService.RestfulService<List<Application>>("/gateway/deal/operations/application", HttpMethod.Get, "1", _conversationContext);
         }
@@ -289,7 +279,7 @@ namespace IGWebApiClient
         ///@return Client summary account information
         ///</Summary>
 
-        private async Task<IgResponse<dto.endpoint.auth.session.AuthenticationResponse>> authenticate(dto.endpoint.auth.session.AuthenticationRequest authenticationRequest)
+        private async Task<IgResponse<dto.endpoint.auth.session.AuthenticationResponse>> Authenticate(dto.endpoint.auth.session.AuthenticationRequest authenticationRequest)
         {
             return await _igRestService.RestfulService<dto.endpoint.auth.session.AuthenticationResponse>("/gateway/deal/session", HttpMethod.Post, "1", _conversationContext, authenticationRequest);
         }
@@ -297,7 +287,7 @@ namespace IGWebApiClient
         ///<Summary>
         ///</Summary>
 
-        public async Task<IgResponse<SprintMarketsSearchResponse>> findAll()
+        public async Task<IgResponse<SprintMarketsSearchResponse>> FindAll()
         {
             return await _igRestService.RestfulService<SprintMarketsSearchResponse>("/gateway/deal/sprintmarkets", HttpMethod.Get, "1", _conversationContext);
         }
@@ -308,7 +298,7 @@ namespace IGWebApiClient
         ///@pathParam marketId Market identifier
         ///</Summary>
 
-        public async Task<IgResponse<ClientSentiment>> getClientSentiment(string marketId)
+        public async Task<IgResponse<ClientSentiment>> GetClientSentiment(string marketId)
         {
             return await _igRestService.RestfulService<ClientSentiment>("/gateway/deal/clientsentiment/" + marketId, HttpMethod.Get, "1", _conversationContext);
         }
@@ -318,7 +308,7 @@ namespace IGWebApiClient
         ///@pathParam marketId Market identifier
         ///</Summary>
 
-        public async Task<IgResponse<ClientSentimentList>> getRelatedClientSentiment(string marketId)
+        public async Task<IgResponse<ClientSentimentList>> GetRelatedClientSentiment(string marketId)
         {
             return await _igRestService.RestfulService<ClientSentimentList>("/gateway/deal/clientsentiment/related/" + marketId, HttpMethod.Get, "1", _conversationContext);
         }
@@ -329,7 +319,7 @@ namespace IGWebApiClient
         ///@pathParam dealReference Deal reference
         ///</Summary>
 
-        public async Task<IgResponse<ConfirmsResponse>> retrieveConfirm(string dealReference)
+        public async Task<IgResponse<ConfirmsResponse>> RetrieveConfirm(string dealReference)
         {
             return await _igRestService.RestfulService<ConfirmsResponse>("/gateway/deal/confirms/" + dealReference, HttpMethod.Get, "1", _conversationContext);
         }
@@ -340,7 +330,7 @@ namespace IGWebApiClient
         ///@pathParam epic The epic of the market to be retrieved
         ///</Summary>
 
-        public async Task<IgResponse<dto.endpoint.marketdetails.v1.MarketDetailsResponse>> marketDetails(string epic)
+        public async Task<IgResponse<dto.endpoint.marketdetails.v1.MarketDetailsResponse>> MarketDetails(string epic)
         {
             return await _igRestService.RestfulService<dto.endpoint.marketdetails.v1.MarketDetailsResponse>("/gateway/deal/markets/" + epic, HttpMethod.Get, "1", _conversationContext);
         }
@@ -350,9 +340,9 @@ namespace IGWebApiClient
         ///@pathParam epic The epic of the market to be retrieved
         ///</Summary>
 
-        public async Task<IgResponse<dto.endpoint.marketdetails.v2.MarketDetailsResponse>> marketDetailsV2(string epic)
+        public async Task<IgResponse<MarketDetailsResponse>> MarketDetailsV2(string epic)
         {
-            return await _igRestService.RestfulService<dto.endpoint.marketdetails.v2.MarketDetailsResponse>("/gateway/deal/markets/" + epic, HttpMethod.Get, "2", _conversationContext);
+            return await _igRestService.RestfulService<MarketDetailsResponse>("/gateway/deal/markets/" + epic, HttpMethod.Get, "2", _conversationContext);
         }
 
         ///<Summary>
@@ -360,7 +350,7 @@ namespace IGWebApiClient
         ///@pathParam epics The epics of the market to be retrieved, separated by a comma. Max number of epics is limited to 50.
         ///</Summary>
 
-        public async Task<IgResponse<MarketDetailsListResponse>> marketDetailsMulti(string epicsList)
+        public async Task<IgResponse<MarketDetailsListResponse>> MarketDetailsMulti(string epicsList)
         {
             return await _igRestService.RestfulService<MarketDetailsListResponse>("/gateway/deal/markets?epics=" + epicsList, HttpMethod.Get, "1", _conversationContext);
         }
@@ -372,7 +362,7 @@ namespace IGWebApiClient
         ///@return OTC create position response
         ///</Summary>
 
-        public async Task<IgResponse<CreatePositionResponse>> createPositionV1(dto.endpoint.positions.create.otc.v1.CreatePositionRequest createPositionRequest)
+        public async Task<IgResponse<CreatePositionResponse>> CreatePositionV1(CreatePositionRequest createPositionRequest)
         {
             return await _igRestService.RestfulService<CreatePositionResponse>("/gateway/deal/positions/otc", HttpMethod.Post, "1", _conversationContext, createPositionRequest);
         }
@@ -383,7 +373,7 @@ namespace IGWebApiClient
         ///@return OTC create position response
         ///</Summary>
 
-        public async Task<IgResponse<CreatePositionResponse>> createPositionV2(dto.endpoint.positions.create.otc.v2.CreatePositionRequest createPositionRequest)
+        public async Task<IgResponse<CreatePositionResponse>> CreatePositionV2(dto.endpoint.positions.create.otc.v2.CreatePositionRequest createPositionRequest)
         {
             return await _igRestService.RestfulService<CreatePositionResponse>("/gateway/deal/positions/otc", HttpMethod.Post, "2", _conversationContext, createPositionRequest);
         }
@@ -395,7 +385,7 @@ namespace IGWebApiClient
         ///@return OTC edit position response
         ///</Summary>
 
-        public async Task<IgResponse<EditPositionResponse>> editPositionV1(string dealId, dto.endpoint.positions.edit.v1.EditPositionRequest editPositionRequest)
+        public async Task<IgResponse<EditPositionResponse>> EditPositionV1(string dealId, EditPositionRequest editPositionRequest)
         {
             return await _igRestService.RestfulService<EditPositionResponse>("/gateway/deal/positions/otc/" + dealId, HttpMethod.Put, "1", _conversationContext, editPositionRequest);
         }
@@ -407,7 +397,7 @@ namespace IGWebApiClient
         ///@return OTC edit position response
         ///</Summary>
 
-        public async Task<IgResponse<EditPositionResponse>> editPositionV2(string dealId, dto.endpoint.positions.edit.v2.EditPositionRequest editPositionRequest)
+        public async Task<IgResponse<EditPositionResponse>> EditPositionV2(string dealId, dto.endpoint.positions.edit.v2.EditPositionRequest editPositionRequest)
         {
             return await _igRestService.RestfulService<EditPositionResponse>("/gateway/deal/positions/otc/" + dealId, HttpMethod.Put, "2", _conversationContext, editPositionRequest);
         }
@@ -418,7 +408,7 @@ namespace IGWebApiClient
         ///@return OTC close position response
         ///</Summary>
 
-        public async Task<IgResponse<ClosePositionResponse>> closePosition(ClosePositionRequest closePositionRequest)
+        public async Task<IgResponse<ClosePositionResponse>> ClosePosition(ClosePositionRequest closePositionRequest)
         {
             return await _igRestService.RestfulService<ClosePositionResponse>("/gateway/deal/positions/otc", HttpMethod.Delete, "1", _conversationContext, closePositionRequest);
         }
@@ -427,7 +417,7 @@ namespace IGWebApiClient
         ///Returns all open positions for the active account
         ///</Summary>
 
-        public async Task<IgResponse<dto.endpoint.positions.get.otc.v1.PositionsResponse>> getOTCOpenPositionsV1()
+        public async Task<IgResponse<dto.endpoint.positions.get.otc.v1.PositionsResponse>> GetOtcOpenPositionsV1()
         {
             return await _igRestService.RestfulService<dto.endpoint.positions.get.otc.v1.PositionsResponse>("/gateway/deal/positions", HttpMethod.Get, "1", _conversationContext);
         }
@@ -438,7 +428,7 @@ namespace IGWebApiClient
         ///@pathParam dealId Deal reference identifier
         ///</Summary>
 
-        public async Task<IgResponse<dto.endpoint.positions.get.otc.v1.OpenPosition>> getOTCOpenPositionByDealIdV1(string dealId)
+        public async Task<IgResponse<dto.endpoint.positions.get.otc.v1.OpenPosition>> GetOtcOpenPositionByDealIdV1(string dealId)
         {
             return await _igRestService.RestfulService<dto.endpoint.positions.get.otc.v1.OpenPosition>("/gateway/deal/positions/" + dealId, HttpMethod.Get, "1", _conversationContext);
         }
@@ -448,7 +438,7 @@ namespace IGWebApiClient
         ///@pathParam dealId Deal reference identifier
         ///</Summary>
 
-        public async Task<IgResponse<dto.endpoint.positions.get.otc.v2.OpenPosition>> getOTCOpenPositionByDealIdV2(string dealId)
+        public async Task<IgResponse<dto.endpoint.positions.get.otc.v2.OpenPosition>> GetOtcOpenPositionByDealIdV2(string dealId)
         {
             return await _igRestService.RestfulService<dto.endpoint.positions.get.otc.v2.OpenPosition>("/gateway/deal/positions/" + dealId, HttpMethod.Get, "2", _conversationContext);
         }
@@ -462,7 +452,7 @@ namespace IGWebApiClient
         ///@requestParam enddate End date (yyyy:MM:dd-HH:mm:ss). Must be later then the start date.
         ///</Summary>
 
-        public async Task<IgResponse<PriceList>> priceSearchByDate(string epic, string resolution, string startdate, string enddate)
+        public async Task<IgResponse<PriceList>> PriceSearchByDate(string epic, string resolution, string startdate, string enddate)
         {
             return await _igRestService.RestfulService<PriceList>("/gateway/deal/prices/" + epic + "/" + resolution + "?startdate=" + startdate + "&enddate=" + enddate, HttpMethod.Get, "1", _conversationContext);
         }
@@ -474,7 +464,7 @@ namespace IGWebApiClient
         ///@pathParam numPoints Number of data points required
         ///</Summary>
 
-        public async Task<IgResponse<PriceList>> priceSearchByNum(string epic, string resolution, string numPoints)
+        public async Task<IgResponse<PriceList>> PriceSearchByNum(string epic, string resolution, string numPoints)
         {
             return await _igRestService.RestfulService<PriceList>("/gateway/deal/prices/" + epic + "/" + resolution + "/" + numPoints, HttpMethod.Get, "1", _conversationContext);
         }
@@ -488,7 +478,7 @@ namespace IGWebApiClient
         ///@pathParam endDate End date (yyyy-MM-dd HH:mm:ss). Must be later then the start date.
         ///</Summary>
 
-        public async Task<IgResponse<PriceList>> priceSearchByDateV2(string epic, string resolution, string startDate, string endDate)
+        public async Task<IgResponse<PriceList>> PriceSearchByDateV2(string epic, string resolution, string startDate, string endDate)
         {
             return await _igRestService.RestfulService<PriceList>("/gateway/deal/prices/" + epic + "/" + resolution + "/" + startDate + "/" + endDate, HttpMethod.Get, "2", _conversationContext);
         }
@@ -500,7 +490,7 @@ namespace IGWebApiClient
         ///@pathParam numPoints Number of data points required
         ///</Summary>
 
-        public async Task<IgResponse<PriceList>> priceSearchByNumV2(string epic, string resolution, string numPoints)
+        public async Task<IgResponse<PriceList>> PriceSearchByNumV2(string epic, string resolution, string numPoints)
         {
             return await _igRestService.RestfulService<PriceList>("/gateway/deal/prices/" + epic + "/" + resolution + "/" + numPoints, HttpMethod.Get, "2", _conversationContext);
         }
@@ -513,7 +503,7 @@ namespace IGWebApiClient
         ///@requestParam searchTerm The term to be used in the search
         ///</Summary>
 
-        public async Task<IgResponse<SearchMarketsResponse>> searchMarket(string searchTerm)
+        public async Task<IgResponse<SearchMarketsResponse>> SearchMarket(string searchTerm)
         {
             return await _igRestService.RestfulService<SearchMarketsResponse>("/gateway/deal/markets?searchTerm=" + searchTerm, HttpMethod.Get, "1", _conversationContext);
         }
@@ -524,7 +514,7 @@ namespace IGWebApiClient
         ///@pathParam watchlistId Watchlist id
         ///</Summary>
 
-        public async Task<IgResponse<DeleteWatchlistResponse>> deleteWatchlist(string watchlistId)
+        public async Task<IgResponse<DeleteWatchlistResponse>> DeleteWatchlist(string watchlistId)
         {
             return await _igRestService.RestfulService<DeleteWatchlistResponse>("/gateway/deal/watchlists/" + watchlistId, HttpMethod.Delete, "1", _conversationContext);
         }
@@ -534,7 +524,7 @@ namespace IGWebApiClient
         ///@param createWatchlistRequest Watchlist create request
         ///</Summary>
 
-        public async Task<IgResponse<CreateWatchlistResponse>> createWatchlist(CreateWatchlistRequest createWatchlistRequest)
+        public async Task<IgResponse<CreateWatchlistResponse>> CreateWatchlist(CreateWatchlistRequest createWatchlistRequest)
         {
             return await _igRestService.RestfulService<CreateWatchlistResponse>("/gateway/deal/watchlists", HttpMethod.Post, "1", _conversationContext, createWatchlistRequest);
         }
@@ -545,7 +535,7 @@ namespace IGWebApiClient
         ///@param addInstrumentToWatchlistRequest Add market to watchlist request
         ///</Summary>
 
-        public async Task<IgResponse<AddInstrumentToWatchlistResponse>> addInstrumentToWatchlist(string watchlistId, AddInstrumentToWatchlistRequest addInstrumentToWatchlistRequest)
+        public async Task<IgResponse<AddInstrumentToWatchlistResponse>> AddInstrumentToWatchlist(string watchlistId, AddInstrumentToWatchlistRequest addInstrumentToWatchlistRequest)
         {
             return await _igRestService.RestfulService<AddInstrumentToWatchlistResponse>("/gateway/deal/watchlists/" + watchlistId, HttpMethod.Put, "1", _conversationContext, addInstrumentToWatchlistRequest);
         }
@@ -556,7 +546,7 @@ namespace IGWebApiClient
         ///@pathParam epic Market epic
         ///</Summary>
 
-        public async Task<IgResponse<RemoveInstrumentFromWatchlistResponse>> removeInstrumentFromWatchlist(string watchlistId, string epic)
+        public async Task<IgResponse<RemoveInstrumentFromWatchlistResponse>> RemoveInstrumentFromWatchlist(string watchlistId, string epic)
         {
             return await _igRestService.RestfulService<RemoveInstrumentFromWatchlistResponse>("/gateway/deal/watchlists/" + watchlistId + "/" + epic, HttpMethod.Delete, "1", _conversationContext);
         }
@@ -567,7 +557,7 @@ namespace IGWebApiClient
         ///Returns all open working orders for the active account
         ///</Summary>
 
-        public async Task<IgResponse<dto.endpoint.workingorders.get.v1.WorkingOrdersResponse>> workingOrdersV1()
+        public async Task<IgResponse<dto.endpoint.workingorders.get.v1.WorkingOrdersResponse>> WorkingOrdersV1()
         {
             return await _igRestService.RestfulService<dto.endpoint.workingorders.get.v1.WorkingOrdersResponse>("/gateway/deal/workingorders", HttpMethod.Get, "1", _conversationContext);
         }
@@ -579,7 +569,7 @@ namespace IGWebApiClient
         ///@param createWorkingOrderRequest Create working order request data
         ///</Summary>
 
-        public async Task<IgResponse<CreateWorkingOrderResponse>> createWorkingOrderV1(dto.endpoint.workingorders.create.v1.CreateWorkingOrderRequest createWorkingOrderRequest)
+        public async Task<IgResponse<CreateWorkingOrderResponse>> CreateWorkingOrderV1(CreateWorkingOrderRequest createWorkingOrderRequest)
         {
             return await _igRestService.RestfulService<CreateWorkingOrderResponse>("/gateway/deal/workingorders/otc", HttpMethod.Post, "1", _conversationContext, createWorkingOrderRequest);
         }
@@ -589,7 +579,7 @@ namespace IGWebApiClient
         ///@param createWorkingOrderRequest Create working order request data
         ///</Summary>
 
-        public async Task<IgResponse<CreateWorkingOrderResponse>> createWorkingOrderV2(dto.endpoint.workingorders.create.v2.CreateWorkingOrderRequest createWorkingOrderRequest)
+        public async Task<IgResponse<CreateWorkingOrderResponse>> CreateWorkingOrderV2(dto.endpoint.workingorders.create.v2.CreateWorkingOrderRequest createWorkingOrderRequest)
         {
             return await _igRestService.RestfulService<CreateWorkingOrderResponse>("/gateway/deal/workingorders/otc", HttpMethod.Post, "2", _conversationContext, createWorkingOrderRequest);
         }
@@ -601,7 +591,7 @@ namespace IGWebApiClient
         ///@param editWorkingOrderRequest Update working order request data
         ///</Summary>
 
-        public async Task<IgResponse<EditWorkingOrderResponse>> editWorkingOrderV1(string dealId, dto.endpoint.workingorders.edit.v1.EditWorkingOrderRequest editWorkingOrderRequest)
+        public async Task<IgResponse<EditWorkingOrderResponse>> EditWorkingOrderV1(string dealId, EditWorkingOrderRequest editWorkingOrderRequest)
         {
             return await _igRestService.RestfulService<EditWorkingOrderResponse>("/gateway/deal/workingorders/otc/" + dealId, HttpMethod.Put, "1", _conversationContext, editWorkingOrderRequest);
         }
@@ -612,7 +602,7 @@ namespace IGWebApiClient
         ///@param editWorkingOrderRequest Update working order request data
         ///</Summary>
 
-        public async Task<IgResponse<EditWorkingOrderResponse>> editWorkingOrderV2(string dealId, dto.endpoint.workingorders.edit.v2.EditWorkingOrderRequest editWorkingOrderRequest)
+        public async Task<IgResponse<EditWorkingOrderResponse>> EditWorkingOrderV2(string dealId, dto.endpoint.workingorders.edit.v2.EditWorkingOrderRequest editWorkingOrderRequest)
         {
             return await _igRestService.RestfulService<EditWorkingOrderResponse>("/gateway/deal/workingorders/otc/" + dealId, HttpMethod.Put, "2", _conversationContext, editWorkingOrderRequest);
         }
@@ -623,7 +613,7 @@ namespace IGWebApiClient
         ///@param deleteWorkingOrderRequest Delete working order request data
         ///</Summary>
 
-        public async Task<IgResponse<DeleteWorkingOrderResponse>> deleteWorkingOrder(string dealId, DeleteWorkingOrderRequest deleteWorkingOrderRequest)
+        public async Task<IgResponse<DeleteWorkingOrderResponse>> DeleteWorkingOrder(string dealId, DeleteWorkingOrderRequest deleteWorkingOrderRequest)
         {
             return await _igRestService.RestfulService<DeleteWorkingOrderResponse>("/gateway/deal/workingorders/otc/" + dealId, HttpMethod.Delete, "1", _conversationContext, deleteWorkingOrderRequest);
         }

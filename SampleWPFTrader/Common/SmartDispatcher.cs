@@ -8,25 +8,25 @@ namespace SampleWPFTrader.Common
 {
     public class SmartDispatcher : PropertyEventDispatcher
     {
-        private static PropertyEventDispatcher instance = new SmartDispatcher();
+        private static readonly PropertyEventDispatcher __instance = new SmartDispatcher();
 
-        private static bool _designer = false;
+        private static readonly bool __designer = false;
         private static Dispatcher _instance;
-        private ViewModelBase viewModel;
+        private ViewModelBase _viewModel;
 
-        public static PropertyEventDispatcher getInstance()
+        public static PropertyEventDispatcher GetInstance()
         {
-            return instance;
+            return __instance;
         }
 
-        public void setViewModel(ViewModelBase viewModel)
+        public void SetViewModel(ViewModelBase viewModel)
         {
-            this.viewModel = viewModel;
+            this._viewModel = viewModel;
         }
 
         public void addEventMessage(string message)
         {
-            viewModel.AddStatusMessage(message);
+            _viewModel.AddStatusMessage(message);
         }
 
         public void BeginInvoke(Action a)
@@ -45,7 +45,7 @@ namespace SampleWPFTrader.Common
             // dispatcher and directly invoke the Action.
             if (_instance != null)
             {
-                if (((forceInvoke && _instance != null) || !_instance.CheckAccess()) && !_designer)
+                if ((forceInvoke && _instance != null || !_instance.CheckAccess()) && !__designer)
                 {
                     _instance.BeginInvoke(a);
                 }
@@ -56,18 +56,18 @@ namespace SampleWPFTrader.Common
             }
             else
             {
-                if (_designer || Application.Current == null)
+                if (__designer || Application.Current == null)
                 {
                     a();
                 }
-                }
+            }
         }
 
         private void RequireInstance()
         {
             // Design-time is more of a no-op, won't be able to resolve the
             // dispatcher if it isn't already set in these situations.
-            if (_designer || Application.Current == null)
+            if (__designer || Application.Current == null)
             {
                 return;
             }
@@ -97,14 +97,7 @@ namespace SampleWPFTrader.Common
         /// <param name="dispatcher">The dispatcher instance.</param>
         public static void Initialize(Dispatcher dispatcher)
         {
-            if (dispatcher == null)
-            {
-                throw new ArgumentNullException("dispatcher");
-            }
-
-            _instance = dispatcher;
+            _instance = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
         }
-
     }
 }
-

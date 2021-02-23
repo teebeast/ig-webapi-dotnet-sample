@@ -11,14 +11,14 @@ namespace SampleWPFTrader.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool inveter = false;
+            var inveter = false;
             if (parameter != null)
             {
                 bool.TryParse((string)parameter, out inveter);
             }
 
             return value is bool
-                       ? (DownloadingData == (bool)value ^ inveter ? Visibility.Visible : Visibility.Collapsed)
+                       ? DownloadingData == (bool)value ^ inveter ? Visibility.Visible : Visibility.Collapsed
                        : Visibility.Visible;
         }
 

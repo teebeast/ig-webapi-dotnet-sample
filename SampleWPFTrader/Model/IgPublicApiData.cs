@@ -10,8 +10,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _clientShort;
 			public decimal? ClientShort
 			{
-				get { return _clientShort; }
-				set
+				get => _clientShort;
+                set
 				{
 					if (_clientShort != value)
 					{
@@ -24,8 +24,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _clientLong;
 			public decimal? ClientLong
 			{
-				get { return _clientLong; }
-				set
+				get => _clientLong;
+                set
 				{
 					if (_clientLong != value)
 					{
@@ -38,10 +38,10 @@ namespace SampleWPFTrader.Model
 			private string _epic;
 			public string Epic
 			{
-				get { return _epic; }
-				set
+				get => _epic;
+                set
 				{
-					if ((_epic != value) && (value != null))
+					if (_epic != value && value != null)
 					{
 						_epic = value;
 						RaisePropertyChanged("Epic");
@@ -55,8 +55,8 @@ namespace SampleWPFTrader.Model
 			private string _tradeType;
 			public string TradeType
 			{
-				get { return _tradeType; }
-				set
+				get => _tradeType;
+                set
 				{
 					if (_tradeType != value)
 					{
@@ -69,8 +69,8 @@ namespace SampleWPFTrader.Model
 			private string _itemName;
 			public string ItemName
 			{
-				get { return _itemName; }
-				set
+				get => _itemName;
+                set
 				{
 					if (_itemName != value)
 					{
@@ -83,8 +83,8 @@ namespace SampleWPFTrader.Model
 			private string _direction;
 			public string Direction
 			{
-				get { return _direction; }
-				set
+				get => _direction;
+                set
 				{
 					if (_direction != value)
 					{
@@ -96,8 +96,8 @@ namespace SampleWPFTrader.Model
 			private string _limitlevel;
 			public string Limitlevel
 			{
-				get { return _limitlevel; }
-				set
+				get => _limitlevel;
+                set
 				{
 					if (_limitlevel != value)
 					{
@@ -109,8 +109,8 @@ namespace SampleWPFTrader.Model
 			private string _dealId;
 			public string DealId
 			{
-				get { return _dealId; }
-				set
+				get => _dealId;
+                set
 				{
 					if (_dealId != value)
 					{
@@ -122,8 +122,8 @@ namespace SampleWPFTrader.Model
 			private string _affectedDealId;
 			public string AffectedDealId
 			{
-				get { return _affectedDealId; }
-				set
+				get => _affectedDealId;
+                set
 				{
 					if (_affectedDealId != value)
 					{
@@ -135,8 +135,8 @@ namespace SampleWPFTrader.Model
 			private string _stopLevel;
 			public string StopLevel
 			{
-				get { return _stopLevel; }
-				set
+				get => _stopLevel;
+                set
 				{
 					if (_stopLevel != value)
 					{
@@ -149,8 +149,8 @@ namespace SampleWPFTrader.Model
 			private string _expiry;
 			public string Expiry
 			{
-				get { return _expiry; }
-				set
+				get => _expiry;
+                set
 				{
 					if (_expiry != value)
 					{
@@ -162,8 +162,8 @@ namespace SampleWPFTrader.Model
 			private string _size;
 			public string Size
 			{
-				get { return _size; }
-				set
+				get => _size;
+                set
 				{
 					if (_size != value)
 					{
@@ -175,8 +175,8 @@ namespace SampleWPFTrader.Model
 			private string _status;
 			public string Status
 			{
-				get { return _status; }
-				set
+				get => _status;
+                set
 				{
 					if (_status != value)
 					{
@@ -188,8 +188,8 @@ namespace SampleWPFTrader.Model
 			private string _epic;
 			public string Epic
 			{
-				get { return _epic; }
-				set
+				get => _epic;
+                set
 				{
 					if (_epic != value)
 					{
@@ -201,8 +201,8 @@ namespace SampleWPFTrader.Model
 			private string _level;
 			public string Level
 			{
-				get { return _level; }
-				set
+				get => _level;
+                set
 				{
 					if (_level != value)
 					{
@@ -214,8 +214,8 @@ namespace SampleWPFTrader.Model
 			private bool? _guaranteedStop;
 			public bool? GuaranteedStop
 			{
-				get { return _guaranteedStop; }
-				set
+				get => _guaranteedStop;
+                set
 				{
 					if (_guaranteedStop != value)
 					{
@@ -227,8 +227,8 @@ namespace SampleWPFTrader.Model
 			private string _dealReference;
 			public string DealReference
 			{
-				get { return _dealReference; }
-				set
+				get => _dealReference;
+                set
 				{
 					if (_dealReference != value)
 					{
@@ -240,8 +240,8 @@ namespace SampleWPFTrader.Model
 			private string _dealStatus;
 			public string DealStatus
 			{
-				get { return _dealStatus; }
-				set
+				get => _dealStatus;
+                set
 				{
 					if (_dealStatus != value)
 					{
@@ -258,8 +258,8 @@ namespace SampleWPFTrader.Model
 			private string _affectedDealStatus;
 			public string AffectedDealStatus
 			{
-				get { return _affectedDealStatus; }
-				set
+				get => _affectedDealStatus;
+                set
 				{
 					if (_affectedDealStatus != value)
 					{
@@ -272,8 +272,8 @@ namespace SampleWPFTrader.Model
 			private string _affectedDealId;
 			public string AffectedDealId
 			{
-				get { return _affectedDealId; }
-				set
+				get => _affectedDealId;
+                set
 				{
 					if (_affectedDealId != value)
 					{
@@ -290,8 +290,8 @@ namespace SampleWPFTrader.Model
 			private string _accountId;
 			public string AccountId
 			{
-				get { return _accountId; }
-				set
+				get => _accountId;
+                set
 				{
 					if (_accountId != value)
 					{
@@ -304,8 +304,8 @@ namespace SampleWPFTrader.Model
 			private string _accountType;
 			public string AccountType
 			{
-				get { return _accountType; }
-				set
+				get => _accountType;
+                set
 				{
 					if (_accountType != value)
 					{
@@ -318,8 +318,8 @@ namespace SampleWPFTrader.Model
 			private string _accountName;
 			public string AccountName
 			{
-				get { return _accountName; }
-				set
+				get => _accountName;
+                set
 				{
 					if (_accountName != value)
 					{
@@ -331,8 +331,8 @@ namespace SampleWPFTrader.Model
 			private string _clientId;
 			public string ClientId
 			{
-				get { return _clientId; }
-				set
+				get => _clientId;
+                set
 				{
 					if (_clientId != value)
 					{
@@ -345,8 +345,8 @@ namespace SampleWPFTrader.Model
 			private string _userName;
 			public string UserName
 			{
-				get { return _userName; }
-				set
+				get => _userName;
+                set
 				{
 					if (_userName != value)
 					{
@@ -359,8 +359,8 @@ namespace SampleWPFTrader.Model
 			private string _lsEndpoint;
 			public string LsEndpoint
 			{
-				get { return _lsEndpoint; }
-				set
+				get => _lsEndpoint;
+                set
 				{
 					if (_lsEndpoint != value)
 					{
@@ -373,8 +373,8 @@ namespace SampleWPFTrader.Model
 			private string _password;
 			public string Password
 			{
-				get { return _password; }
-				set
+				get => _password;
+                set
 				{
 					if (_password != value)
 					{
@@ -387,8 +387,8 @@ namespace SampleWPFTrader.Model
 			private string _apiKey;
 			public string ApiKey
 			{
-				get { return _apiKey; }
-				set
+				get => _apiKey;
+                set
 				{
 					if (_apiKey != value)
 					{
@@ -402,8 +402,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _profitLoss;
 			public decimal? ProfitLoss
 			{
-				get { return _profitLoss; }
-				set
+				get => _profitLoss;
+                set
 				{
 					if (_profitLoss != value)
 					{
@@ -416,8 +416,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _deposit;
 			public decimal? Deposit
 			{
-				get { return _deposit; }
-				set
+				get => _deposit;
+                set
 				{
 					if (_deposit != value)
 					{
@@ -430,8 +430,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _usedMargin;
 			public decimal? UsedMargin
 			{
-				get { return _usedMargin; }
-				set
+				get => _usedMargin;
+                set
 				{
 					if (_usedMargin != value)
 					{
@@ -444,8 +444,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _amountDue;
 			public decimal? AmountDue
 			{
-				get { return _amountDue; }
-				set
+				get => _amountDue;
+                set
 				{
 					if (_amountDue != value)
 					{
@@ -458,8 +458,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _availableCash;
 			public decimal? AvailableCash
 			{
-				get { return _availableCash; }
-				set
+				get => _availableCash;
+                set
 				{
 					if (_availableCash != value)
 					{
@@ -472,8 +472,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _balance;
 			public decimal? Balance
 			{
-				get { return _balance; }
-				set
+				get => _balance;
+                set
 				{
 					if (_balance != value)
 					{
@@ -490,10 +490,10 @@ namespace SampleWPFTrader.Model
 			private InstrumentModel _model;
 			public InstrumentModel Model
 			{
-				get { return _model; }
-				set
+				get => _model;
+                set
 				{
-					if ((_model != value) && (value != null))
+					if (_model != value && value != null)
 					{
 						_model = value;
 						RaisePropertyChanged("Model");
@@ -507,10 +507,10 @@ namespace SampleWPFTrader.Model
 			private string _watchlistName;
 			public string WatchlistName
 			{
-				get { return _watchlistName; }
-				set
+				get => _watchlistName;
+                set
 				{
-					if ((_watchlistName != value) && (value != null))
+					if (_watchlistName != value && value != null)
 					{
 						_watchlistName = value;
 						RaisePropertyChanged("WatchlistName");
@@ -521,10 +521,10 @@ namespace SampleWPFTrader.Model
 			private string _watchlistId;
 			public string WatchlistId
 			{
-				get { return _watchlistId; }
-				set
+				get => _watchlistId;
+                set
 				{
-					if ((_watchlistId != value) && (value != null))
+					if (_watchlistId != value && value != null)
 					{
 						_watchlistId = value;
 						RaisePropertyChanged("WatchlistId");
@@ -535,8 +535,8 @@ namespace SampleWPFTrader.Model
 			private bool _editable;
 			public bool Editable
 			{
-				get { return _editable; }
-				set
+				get => _editable;
+                set
 				{
 					if (_editable != value)
 					{
@@ -549,8 +549,8 @@ namespace SampleWPFTrader.Model
 			private bool _deletable;
 			public bool Deletable
 			{
-				get { return _deletable; }
-				set
+				get => _deletable;
+                set
 				{
 					if (_deletable != value)
 					{
@@ -567,10 +567,10 @@ namespace SampleWPFTrader.Model
 			private string _createdDate;
 			public string CreatedDate
 			{
-				get { return _createdDate; }
-				set
+				get => _createdDate;
+                set
 				{
-					if ((_createdDate != value) && (value != null))
+					if (_createdDate != value && value != null)
 					{
 						_createdDate = value;
 						RaisePropertyChanged("CreatedDate");
@@ -581,8 +581,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _dealSize;
 			public decimal? DealSize
 			{
-				get { return _dealSize; }
-				set
+				get => _dealSize;
+                set
 				{
 					if (_dealSize != value)
 					{
@@ -595,8 +595,8 @@ namespace SampleWPFTrader.Model
 			private string _direction;
 			public string Direction
 			{
-				get { return _direction; }
-				set
+				get => _direction;
+                set
 				{
 					if (_direction != value)
 					{
@@ -611,8 +611,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _openLevel;
 			public decimal? OpenLevel
 			{
-				get { return _openLevel; }
-				set
+				get => _openLevel;
+                set
 				{
 					if (_openLevel != value)
 					{
@@ -625,8 +625,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _stopLevel;
 			public decimal? StopLevel
 			{
-				get { return _stopLevel; }
-				set
+				get => _stopLevel;
+                set
 				{
 					if (_stopLevel != value)
 					{
@@ -639,8 +639,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _limitLevel;
 			public decimal? LimitLevel
 			{
-				get { return _limitLevel; }
-				set
+				get => _limitLevel;
+                set
 				{
 					if (_limitLevel != value)
 					{
@@ -653,10 +653,10 @@ namespace SampleWPFTrader.Model
 			private InstrumentModel _model;
 			public InstrumentModel Model
 			{
-				get { return _model; }
-				set
+				get => _model;
+                set
 				{
-					if ((_model != value) && (value != null))
+					if (_model != value && value != null)
 					{
 						_model = value;
 						RaisePropertyChanged("Model");
@@ -670,10 +670,10 @@ namespace SampleWPFTrader.Model
 			private string _dealId;
 			public string DealId
 			{
-				get { return _dealId; }
-				set
+				get => _dealId;
+                set
 				{
-					if ((_dealId != value) && (value != null))
+					if (_dealId != value && value != null)
 					{
 						_dealId = value;
 						RaisePropertyChanged("DealId");
@@ -684,8 +684,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _orderSize;
 			public decimal? OrderSize
 			{
-				get { return _orderSize; }
-				set
+				get => _orderSize;
+                set
 				{
 					if (_orderSize != value)
 					{
@@ -698,8 +698,8 @@ namespace SampleWPFTrader.Model
 			private string _direction;
 			public string Direction
 			{
-				get { return _direction; }
-				set
+				get => _direction;
+                set
 				{
 					if (_direction != value)
 					{
@@ -713,10 +713,10 @@ namespace SampleWPFTrader.Model
 			private string _creationDate;
 			public string CreationDate
 			{
-				get { return _creationDate; }
-				set
+				get => _creationDate;
+                set
 				{
-					if ((_creationDate != value) && (value != null))
+					if (_creationDate != value && value != null)
 					{
 						_creationDate = value;
 						RaisePropertyChanged("CreationDate");
@@ -727,10 +727,10 @@ namespace SampleWPFTrader.Model
 			private InstrumentModel _model;
 			public InstrumentModel Model
 			{
-				get { return _model; }
-				set
+				get => _model;
+                set
 				{
-					if ((_model != value) && (value != null))
+					if (_model != value && value != null)
 					{
 						_model = value;
 						RaisePropertyChanged("Model");
@@ -744,10 +744,10 @@ namespace SampleWPFTrader.Model
 			private string _updateTime;
 			public string UpdateTime
 			{
-				get { return _updateTime; }
-				set
+				get => _updateTime;
+                set
 				{
-					if ((_updateTime != value) && (value != null))
+					if (_updateTime != value && value != null)
 					{
 						_updateTime = value;
 						RaisePropertyChanged("UpdateTime");
@@ -758,10 +758,10 @@ namespace SampleWPFTrader.Model
 			private InstrumentModel _model;
 			public InstrumentModel Model
 			{
-				get { return _model; }
-				set
+				get => _model;
+                set
 				{
-					if ((_model != value) && (value != null))
+					if (_model != value && value != null)
 					{
 						_model = value;
 						RaisePropertyChanged("Model");
@@ -776,7 +776,7 @@ namespace SampleWPFTrader.Model
             private string _chartEpic;
             public string ChartEpic
             {
-                get { return _chartEpic; }
+                get => _chartEpic;
                 set
                 {
                     if (_chartEpic != value)
@@ -790,7 +790,7 @@ namespace SampleWPFTrader.Model
             private ChartHlocModel _offer;
             public ChartHlocModel Offer
             {
-                get { return _offer; }
+                get => _offer;
                 set
                 {
                     if (_offer != value)
@@ -804,7 +804,7 @@ namespace SampleWPFTrader.Model
             private ChartHlocModel _bid;
             public ChartHlocModel Bid
             {
-                get { return _bid; }
+                get => _bid;
                 set
                 {
                     if (_bid != value)
@@ -818,7 +818,7 @@ namespace SampleWPFTrader.Model
             private ChartHlocModel _lastTradedPrice;
             public ChartHlocModel LastTradedPrice
             {
-                get { return _lastTradedPrice; }
+                get => _lastTradedPrice;
                 set
                 {
                     if (_lastTradedPrice != value)
@@ -832,7 +832,7 @@ namespace SampleWPFTrader.Model
             private bool? _endOfConsolidation;
             public bool? EndOfConsolidation
             {
-                get { return _endOfConsolidation; }
+                get => _endOfConsolidation;
                 set
                 {
                     if (_endOfConsolidation != value)
@@ -846,7 +846,7 @@ namespace SampleWPFTrader.Model
             private int? _tickCount;
             public int? TickCount
             {
-                get { return _tickCount; }
+                get => _tickCount;
                 set
                 {
                     if (_tickCount != value)
@@ -864,7 +864,7 @@ namespace SampleWPFTrader.Model
             private decimal? _lastTradedVolume;
             public decimal? LastTradedVolume
             {
-                get { return _lastTradedVolume; }
+                get => _lastTradedVolume;
                 set
                 {
                     if (_lastTradedVolume != value)
@@ -881,7 +881,7 @@ namespace SampleWPFTrader.Model
             private decimal? _incrimentalTradingVolume;
             public decimal? IncrimetalTradingVolume
             {
-                get { return _incrimentalTradingVolume; }
+                get => _incrimentalTradingVolume;
                 set
                 {
                     if (_incrimentalTradingVolume != value)
@@ -895,10 +895,10 @@ namespace SampleWPFTrader.Model
             /// <summary>
             /// Update time (as milliseconds from the Epoch)
             /// </summary>
-            private DateTime? _updateTime { get; set; }
+            private DateTime? _updateTime;
             public DateTime? UpdateTime
             {
-                get { return _updateTime; }
+                get => _updateTime;
                 set
                 {
                     if (_updateTime != value)
@@ -915,7 +915,7 @@ namespace SampleWPFTrader.Model
             private decimal? _dayMidOpenPrice;
             public decimal? DayMidOpenPrice
             {
-                get { return _dayMidOpenPrice; }
+                get => _dayMidOpenPrice;
                 set
                 {
                     if (_dayMidOpenPrice != value)
@@ -932,7 +932,7 @@ namespace SampleWPFTrader.Model
             private decimal? _dayChange;
             public decimal? DayChange
             {
-                get { return _dayChange; }
+                get => _dayChange;
                 set
                 {
                     if (_dayChange != value)
@@ -950,7 +950,7 @@ namespace SampleWPFTrader.Model
             private decimal? _dayChangePct;
             public decimal? DayChangePct
             {
-                get { return _dayChangePct; }
+                get => _dayChangePct;
                 set
                 {
                     if (_dayChangePct != value)
@@ -964,7 +964,7 @@ namespace SampleWPFTrader.Model
             private decimal? _dayHigh;
             public decimal? DayHigh
             {
-                get { return _dayHigh; }
+                get => _dayHigh;
                 set
                 {
                     if (_dayHigh != value)
@@ -981,7 +981,7 @@ namespace SampleWPFTrader.Model
             private decimal? _dayLow;
             public decimal? DayLow
             {
-                get { return _dayLow; }
+                get => _dayLow;
                 set
                 {
                     if (_dayLow != value)
@@ -1001,7 +1001,7 @@ namespace SampleWPFTrader.Model
             private decimal? _high;
             public decimal? High
             {
-                get { return _high; }
+                get => _high;
                 set
                 {
                     if (_high != value)
@@ -1015,7 +1015,7 @@ namespace SampleWPFTrader.Model
             private decimal? _low;
             public decimal? Low
             {
-                get { return _low; }
+                get => _low;
                 set
                 {
                     if (_low != value)
@@ -1029,7 +1029,7 @@ namespace SampleWPFTrader.Model
             private decimal? _open;
             public decimal? Open
             {
-                get { return _open; }
+                get => _open;
                 set
                 {
                     if (_open != value)
@@ -1043,7 +1043,7 @@ namespace SampleWPFTrader.Model
             private decimal? _close;
             public decimal? Close
             {
-                get { return _close; }
+                get => _close;
                 set
                 {
                     if (_close != value)
@@ -1061,8 +1061,8 @@ namespace SampleWPFTrader.Model
 			private ClientSentimentModel _clientSentiment;
 			public ClientSentimentModel ClientSentiment
 			{
-				get { return _clientSentiment; }
-				set
+				get => _clientSentiment;
+                set
 				{
 					if (_clientSentiment != value)
 					{
@@ -1075,8 +1075,8 @@ namespace SampleWPFTrader.Model
 			private string _marketStatus;
 			public string MarketStatus
 			{
-				get { return _marketStatus; }
-				set
+				get => _marketStatus;
+                set
 				{
 					if (_marketStatus != value)
 					{
@@ -1089,10 +1089,10 @@ namespace SampleWPFTrader.Model
 			private string _lsItemName;
 			public string LsItemName
 			{
-				get { return _lsItemName; }
-				set
+				get => _lsItemName;
+                set
 				{
-					if ((_lsItemName != value) && (value != null))
+					if (_lsItemName != value && value != null)
 					{
 						_lsItemName = value;
 						RaisePropertyChanged("LsItemName");
@@ -1104,10 +1104,10 @@ namespace SampleWPFTrader.Model
 			private string _epic;
 			public string Epic
 			{
-				get { return _epic; }
-				set
+				get => _epic;
+                set
 				{
-					if ((_epic != value) && (value != null))
+					if (_epic != value && value != null)
 					{
 						_epic = value;
 						RaisePropertyChanged("Epic");
@@ -1118,8 +1118,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _bid;
 			public decimal? Bid
 			{
-				get { return _bid; }
-				set
+				get => _bid;
+                set
 				{
 					if (_bid != value)
 					{
@@ -1132,8 +1132,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _offer;
 			public decimal? Offer
 			{
-				get { return _offer; }
-				set
+				get => _offer;
+                set
 				{
 					if (_offer != value)
 					{
@@ -1146,8 +1146,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _open;
 			public decimal? Open
 			{
-				get { return _open; }
-				set
+				get => _open;
+                set
 				{
 					if (_open != value)
 					{
@@ -1161,8 +1161,8 @@ namespace SampleWPFTrader.Model
 
 			public string UpdateTime
 			{
-				get { return _updateTime; }
-				set
+				get => _updateTime;
+                set
 				{
 					if (value != _updateTime)
 					{
@@ -1175,11 +1175,8 @@ namespace SampleWPFTrader.Model
 			private string _instrumentName;
 			public string InstrumentName
 			{
-				get
-				{
-					return _instrumentName;
-				}
-				set
+				get => _instrumentName;
+                set
 				{
 					if (_instrumentName != value)
 					{
@@ -1193,8 +1190,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _netChange;
 			public decimal? NetChange
 			{
-				get { return _netChange; }
-				set
+				get => _netChange;
+                set
 				{
 					if (_netChange != value)
 					{
@@ -1207,8 +1204,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _pctChange;
 			public decimal? PctChange
 			{
-				get { return _pctChange; }
-				set
+				get => _pctChange;
+                set
 				{
 					if (_pctChange != value)
 					{
@@ -1221,8 +1218,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _high;
 			public decimal? High
 			{
-				get { return _high; }
-				set
+				get => _high;
+                set
 				{
 					if (_high != value)
 					{
@@ -1235,8 +1232,8 @@ namespace SampleWPFTrader.Model
 			private decimal? _low;
 			public decimal? Low
 			{
-				get { return _low; }
-				set
+				get => _low;
+                set
 				{
 					if (_low != value)
 					{
@@ -1250,8 +1247,8 @@ namespace SampleWPFTrader.Model
 			private bool? _streamingPricesAvailable;
 			public bool? StreamingPricesAvailable
 			{
-				get { return _streamingPricesAvailable; }
-				set
+				get => _streamingPricesAvailable;
+                set
 				{
 					if (_streamingPricesAvailable != value)
 					{

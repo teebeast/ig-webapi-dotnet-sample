@@ -6,8 +6,8 @@ using PCLCrypto;
 namespace IGWebApiClient.Security
 {
 	public class Rsa
-	{
-        private ICryptographicKey _key { get; set; }
+    {
+        private readonly ICryptographicKey _key;
 
         public Rsa(byte[] key, bool intermediateConvertToBase64BeforeEncryption = false, bool isPrivateKey = false)
 		{                      
@@ -17,19 +17,11 @@ namespace IGWebApiClient.Security
                 IntermediateConvertToBase64BeforeEncryption = intermediateConvertToBase64BeforeEncryption;
                 CanDecrypt = isPrivateKey;
 
-               
-                if (isPrivateKey)
-                {
-                   _key = rsa.ImportKeyPair(key);
-                }
-                else
-                {
-                    _key = rsa.ImportPublicKey(key);
-                }
+                _key = isPrivateKey ? rsa.ImportKeyPair(key) : rsa.ImportPublicKey(key);
             }
-            catch (Exception ex)
+            catch
             {
-                string exception = ex.Message;
+                //
             }           
 		}
        
@@ -40,13 +32,13 @@ namespace IGWebApiClient.Security
 		public byte[] RsaEncrypt(string data)
 		{
             //IBuffer databuf = CryptographicBuffer.ConvertStringToBinary(data, BinaryStringEncoding.Utf8);
-            var databuf = UTF8Encoding.UTF8.GetBytes(data);
+            var databuf = Encoding.UTF8.GetBytes(data);
 
 			if (IntermediateConvertToBase64BeforeEncryption)
 			{
 				//convert byte array to base 64 and then reencode it to UTF8, which in this case should be == ascii.
                 //databuf = CryptographicBuffer.ConvertStringToBinary(Convert.ToBase64String(databuf.ToArray()), BinaryStringEncoding.Utf8);			   
-			    databuf = UTF8Encoding.UTF8.GetBytes((Convert.ToBase64String(databuf)));      			    
+			    databuf = Encoding.UTF8.GetBytes(Convert.ToBase64String(databuf));      			    
 			}
 			return WinRTCrypto.CryptographicEngine.Encrypt(_key, databuf).ToArray();
 		}      
@@ -61,7 +53,7 @@ namespace IGWebApiClient.Security
 
             var data = WinRTCrypto.CryptographicEngine.Decrypt(_key, encrypted);
             
-            UTF8Encoding encoding = new UTF8Encoding();
+            var encoding = new UTF8Encoding();
 
             if (IntermediateConvertToBase64BeforeEncryption)
             {                                                

@@ -8,8 +8,8 @@ namespace SampleWPFTrader.ViewModel
 {
     public abstract class ViewModelBase : PropertyChanged
     {
-		public static IgRestApiClient igRestApiClient;
-		public static IGStreamingApiClient igStreamApiClient;
+		public static IgRestApiClient IgRestApiClient;
+		public static IGStreamingApiClient IgStreamApiClient;
 
 		public enum TradeSubscriptionType
 		{
@@ -23,13 +23,13 @@ namespace SampleWPFTrader.ViewModel
         public void InitialiseViewModel()
         {
             var igWebApiConnectionConfig = ConfigurationManager.GetSection("IgWebApiConnection") as NameValueCollection;
-            string env = igWebApiConnectionConfig["environment"];
+            var env = igWebApiConnectionConfig["environment"];
 
-            SmartDispatcher smartDispatcher = (SmartDispatcher) SmartDispatcher.getInstance();
-            smartDispatcher.setViewModel(ApplicationViewModel.getInstance());
+            var smartDispatcher = (SmartDispatcher) SmartDispatcher.GetInstance();
+            smartDispatcher.SetViewModel(ApplicationViewModel.getInstance());
 
-            igRestApiClient = new IgRestApiClient(env, smartDispatcher);           
-            igStreamApiClient = new IGStreamingApiClient();            
+            IgRestApiClient = new IgRestApiClient(env, smartDispatcher);           
+            IgStreamApiClient = new IGStreamingApiClient();            
         }
 
         public static bool LoggedIn { get; set; }             
@@ -75,10 +75,7 @@ namespace SampleWPFTrader.ViewModel
 
         public string ApplicationDebugData
         {
-            get
-            {
-                return _applicationDebugData;
-            }
+            get => _applicationDebugData;
             set
             {
                 if (_applicationDebugData != value)
